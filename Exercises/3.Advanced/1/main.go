@@ -8,28 +8,48 @@ type Shape interface {
 }
 
 type Rectangle struct {
-	// TODO: код писать здесь
+	height float64
+	width  float64
 }
 
-func NewRectangle(float64, float64, string) *Rectangle {
-	// TODO: код писать здесь
-	return &Rectangle{}
+func NewRectangle(height float64, width float64, name string) *Rectangle {
+	return &Rectangle{height: height, width: width}
 }
 
-// TODO: код писать здесь
+func (r Rectangle) Type() string {
+	return "прямоугольник"
+}
+
+func (r Rectangle) Area() float64 {
+	return r.width * r.height
+}
+
+func (c Circle) Type() string {
+	return "окружность"
+}
+
+func (c Circle) Area() float64 {
+	return c.radius * c.radius * pi
+}
 
 type Circle struct {
-	// TODO: код писать здесь
+	radius float64
 }
 
-func NewCircle(float64, string) *Circle {
-	// TODO: код писать здесь
-	return &Circle{}
+func NewCircle(radius float64, name string) *Circle {
+	return &Circle{radius: radius}
 }
 
-func AreaCalculator(figures []Shape) (string, float64) {
-	// TODO: код писать здесь
-	return "", 0.0
+func AreaCalculator(figures []Shape) (str string, area float64) {
+	if figures == nil {
+		return
+	}
+	for _, value := range figures {
+		str = str + value.Type() + "-"
+		area = area + value.Area()
+	}
+	str = str[0 : len(str)-1]
+	return
 }
 
 func main() {
