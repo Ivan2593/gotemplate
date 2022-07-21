@@ -1,0 +1,135 @@
+openapi: 3.0.3
+info:
+  title: API service-monitor
+  description: Предназначен для команд разработчиков, которым требуется настроить клиентский сервис(ы) работы с service-monitor-ом
+  version: 0.0.1
+paths:
+  /api/v1/metrics:
+    get:
+      operationId: apiMetricList
+      summary: Вывести список метрик
+      description: >
+        Для получения метрик за определенный период времени,
+        соответствующих названию метрики
+      parameters:
+        - name: name
+          in: query
+          schema:
+            type: string
+        - name: date_from
+          in: query
+          schema:
+            type: string
+            format: date-time
+        - name: date_to
+          in: query
+          schema:
+            type: string
+            format: date-time
+      responses:
+        '200':
+          description: Возвращает список метрик отсортированных в хронологическом порядке
+          content: 
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Metrics'
+        default:
+          description: Нештатное поведение, какая-то ошибка, важен HTTP код ответа
+          content:
+            application/json:
+                schema:
+                  $ref: '#/components/schemas/DefaultResponse'
+  /api/v1/checks:
+    get:
+      operationId: apiCheckList
+      summary: Вывести список проверок здоровья
+      description: >
+        Для получения последних N результатов проверок здоровья для определенного домена
+      parameters:
+        - name: domain
+          in: query
+          schema:
+            type: string
+        - name: num
+          in: query
+          schema:
+            type: integer
+            default: 7
+      responses:
+        '200':
+          description: Возвращает список проверок здоровья отсортированных в хронологическом порядке
+          content: 
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Checks'
+        default:
+          description: Нештатное поведение, какая-то ошибка, важен HTTP код ответа
+          content:
+            application/json:
+                schema:
+                  $ref: '#/components/schemas/DefaultResponse'
+components:
+  schemas:
+    DefaultResponse:
+      type: object
+      properties:
+        code:
+          type: integer
+          minimum: 100
+          maximum: 599
+        message:
+          type: string
+          minLength: 1
+        error:
+          type: string
+          minLength: 1
+    Metric:
+      type: object
+      properties:
+        id:
+          type: integer
+          minimum: 1
+        timestamp:
+          type: string
+          format: date-time
+        name:
+          type: string
+          minLength: 1
+        value:
+          type: number
+          format: float 
+      required:
+      - id
+      - timestamp
+      - name
+      - value
+    Metrics:
+      type: array
+      items:
+        $ref: '#/components/schemas/Metric'
+    Check:
+      type: object
+      properties:
+        id:
+          type: integer
+          minimum: 1
+        timestamp:
+          type: string
+          format: date-time
+        domain:
+          type: string
+          minLength: 1
+        status:
+          type: string
+          enum:
+            - pass
+            - fail 
+      required:
+      - id
+      - timestamp
+      - domain
+      - status
+    Checks:
+      type: array
+      items:
+        $ref: '#/components/schemas/Check'
